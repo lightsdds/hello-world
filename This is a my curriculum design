@@ -1,0 +1,494 @@
+#define M 3
+#define SIZE 100
+
+typedef struct
+{
+	int id;
+	int score[M];
+}student;
+void menu(void)
+{
+	printf("==========Student Scores Analysis=========\n");
+	printf("              1、Read Data\n");
+	printf("              2、count\n");
+	printf("              3、Show Data I\n");
+	printf("              4、Draw Histogram\n");
+	printf("              5、Show Data II\n");
+	printf("              0、Exit\n");
+	printf("=========================================\n");
+
+}
+int ReadData();
+void count();
+
+void ShowDataI();
+void DrawHistogram();
+void ShowDataII();
+
+int main()
+{
+	
+	int a=0;
+	student* stu;
+	stu = (int)malloc(sizeof(int) * 100);
+	
+	menu();
+	int n;
+	while (1)
+	{
+		printf("请选择你想要的功能");
+		scanf_s("%d", &n);
+		switch (n)
+		{
+		case 1:
+			a = ReadData(stu);
+			break;
+		case 2:
+			count(stu);
+			break;
+		case 3:
+			ShowDataI(stu,a);
+			break;
+		case 4:
+			DrawHistogram(stu,a);
+			break;
+		case 5:
+			 ShowDataII(stu,a);
+			break;
+		case 0:
+			exit(0);
+			break;
+		default:
+			break;
+		}
+	}
+}
+int ReadData(student *stu)
+{
+	FILE* pf;
+	errno_t err = fopen_s(&pf, "a.txt", "r");
+	int a1, a2;
+	fscanf_s(pf, "%d%d", &a1, &a2);
+	int i = 0;
+	for (; i < SIZE && !feof(pf); i++)
+	{
+		fscanf_s(pf, "%d", &stu[i].id);
+		fscanf_s(pf, "%d%d", &stu[i].score[0], &stu[i].score[1]);
+		stu[i].score[2] = (int)(1.0 * a1 / 100 * stu[i].score[0] + 1.0 * a2 / 100 * stu[i].score[1]);
+	}
+	return --i;
+}
+void ShowDataI(student* stu, int n)
+{
+	printf(" 学号  平时成绩 期末成绩 最终成绩\n");
+	for (int j = 0; j < n; j++)
+	{
+		printf("%5d  %6d  %6d  %6d\n", stu[j].id, stu[j].score[0], stu[j].score[1], stu[j].score[2]);
+	}
+	int a[5] = { 0 };
+	int b[5] = { 0 };
+	int c[5] = { 0 };
+	for (int i = 0; i < n; i++)
+	{
+		if (stu[i].score[0] < 60)
+			a[0]++;
+		if (59 < stu[i].score[0] && stu[i].score[0] < 70)
+			a[1]++;
+		if (69 < stu[i].score[0] && stu[i].score[0] < 80)
+			a[2]++;
+		if (79 < stu[i].score[0] && stu[i].score[0] < 90)
+			a[3]++;
+		if (89 < stu[i].score[0] && stu[i].score[0] < 100)
+			a[4]++;
+		if (stu[i].score[1] < 60)
+			b[0]++;
+		if (59 < stu[i].score[1] && stu[i].score[1] < 70)
+			b[1]++;
+		if (69 < stu[i].score[1] && stu[i].score[1] < 80)
+			b[2]++;
+		if (79 < stu[i].score[1] && stu[i].score[1] < 90)
+			b[3]++;
+		if (89 < stu[i].score[1] && stu[i].score[1] < 100)
+			b[4]++;
+		if (stu[i].score[2] < 60)
+			c[0]++;
+		if (59 < stu[i].score[2] && stu[i].score[1] < 70)
+			c[1]++;
+		if (69 < stu[i].score[2] && stu[i].score[1] < 80)
+			c[2]++;
+		if (79 < stu[i].score[2] && stu[i].score[1] < 90)
+			c[3]++;
+		if (89 < stu[i].score[2] && stu[i].score[1] < 100)
+			c[4]++;
+	}
+
+	float gg[15] = { 0 };
+	gg[0] = (float)a[0] / n;
+	    printf("平时分    分段      人数    比例\n");
+		printf("          <60        %d      %f\n",a[0],gg[0] );
+	for (int i = 1; i < 5; i++)
+	{
+		gg[i] = (float)a[i] /(float)n;
+		printf("         %3d~%3d     %d      %f \n", 10 * i + 50, 10 * i + 60, a[i], gg[i]);
+
+	}
+	gg[5] = (float)b[0] / n;
+	printf("期末分    分段      人数    比例\n");
+	printf("          <60        %d      %f\n", b[0], gg[5]);
+	for (int i = 1; i < 5; i++)
+	{
+		gg[i+5] = (float)b[i] / (float)n;
+		printf("         %3d~%3d     %d      %f \n", 10 * i + 50, 10 * i + 60, b[i], gg[i+5]);
+
+	}
+	gg[10] = (float)b[0] / n;
+	printf("最终分    分段      人数    比例\n");
+	printf("          <60        %d      %f\n", c[0], gg[10]);
+	for (int i = 1; i < 5; i++)
+	{
+		gg[i + 10] = (float)c[i] / (float)n;
+		printf("         %3d~%3d     %d      %f \n", 10 * i + 50, 10 * i + 60, c[i], gg[i + 10]);
+
+	}
+}
+void count(student* stu)
+{
+	int a;
+	a=ReadData(stu);
+	//平均分
+	//期末分
+	int min1 = stu[0].score[0];
+	int *max1 = stu[0].score[0];
+	for (int i = 1 ; i < a - 1; i++)
+	{
+		if (stu[i].score[0] < stu[i + 1].score[0])
+			max1 = stu[i + 1].score[0];
+		if (stu[i].score[0] > stu[i + 1].score[0])
+			min1 = stu[i + 1].score[0];
+	}
+	int max2 = stu[0].score[1];//期末分
+	int min2 = stu[0].score[1];
+	for (int i = 1; i < a - 1; i++)
+	{
+		if (stu[i].score[1] < stu[i + 1].score[1])
+			max2 = stu[i + 1].score[1];
+		if (stu[i].score[1] > stu[i + 1].score[1])
+			min2 = stu[i + 1].score[1];
+	}
+	int  max3 = stu[0].score[2];//最终得分
+	int  min3 = stu[0].score[2];
+	for (int i = 1; i < a - 1; i++)
+	{
+		if (stu[i].score[2] < stu[i + 1].score[2])
+			max3 = stu[i + 1].score[2];
+		if (stu[i].score[2] > stu[i + 1].score[2])
+			min3 = stu[i + 1].score[2];
+	}
+	printf("平时分最大值为%d\n平时分最小值为%d\n", max1, min1);
+	printf("期末分最大值为%d\n期末分最小值为%d\n", max2, min2);
+	printf("最终分最大值为%d\n最终分最小值为%d\n", max3, min3);
+	float average1;
+	float average2;
+	float average3;
+	float tamp1=0, tamp2=0,tamp3=0;
+	for (int i = 0; i < a; i++)
+	{
+		tamp1 = stu[i].score[0] + tamp1;
+		tamp2 = stu[i].score[1] + tamp2;
+		tamp3 = stu[i].score[2] + tamp3;
+	}
+	average1 = tamp1 / a;
+	average2 = tamp2 / a;
+	average3 = tamp3 / a;
+	printf("平时分的平均分是%f\n", average1);
+	printf("期末分的平均分是%f\n", average2);
+	printf("最终分的平均分是%f\n", average3);
+	//标准差
+	float tamp4=0,tamp5=0,tamp6=0;
+	for (int i = 0; i < a; i++)
+	{
+		tamp4 = (stu[i].score[0] - average1) * (stu[i].score[0] - average1)+tamp1;
+		tamp5 = (stu[i].score[1] - average2) * (stu[i].score[1] - average2)+tamp2;
+		tamp6 = (stu[i].score[2] - average3) * (stu[i].score[2] - average3)+tamp3;
+	}
+	float s1, s2, s3;
+	s1 = sqrt(tamp4 / a);
+	s2 = sqrt(tamp5 / a);
+	s3 = sqrt(tamp6 / a);
+	printf("平时分的方差是%f\n", s1);
+	printf("期末分的方差是%f\n", s2);
+	printf("最终分的方差是%f\n", s3);
+	//众数
+	int b[100] = { 0 };
+	int c[100] = { 0 };	
+	for (int i = 0; i < a; i++)
+	{
+			b[i] = stu[i].score[0];
+	
+	}
+	for (int i = 0; i < a; i++)
+	{
+		for (int j = 0; j < a; j++)
+		{
+			if (b[j] == stu[i].score[0])
+				c[j]++;
+		}
+	}
+	int most1=0;
+	for (int i = 0; i < a - 1; i++)
+	{
+		if (c[i] < c[i + 1])
+			most1 = i + 1;
+	}
+	if (c[0] == 1)
+	{
+		most1 = -1;
+		printf("平时分没有众数\n");
+	}
+	else
+		printf("平时分的众数为%d\n", b[most1]);
+	int d[100] = { 0 };
+	int e[100] = { 0 };
+	for (int i = 0; i < a; i++)
+	{
+		d[i] = stu[i].score[1];
+
+	}
+	for (int i = 0; i < a; i++)
+	{
+		for (int j = 0; j < a; j++)
+		{
+			if (d[j] == stu[i].score[1])
+				e[j]++;
+		}
+	}
+	int most2 = 0;
+	for (int i = 0; i < a - 1; i++)
+	{
+		if (e[i] < e[i + 1])
+			most2 = i + 1;
+	}
+	if (e[0] == 1)
+	{
+		most2 = -1;
+		printf("期末分没有众数\n");
+	}
+	else
+		printf("期末分的众数为%d\n", d[most2]);
+	int f[100] = { 0 };
+	int g[100] = { 0 };
+	for (int i = 0; i < a; i++)
+	{
+		f[i] = stu[i].score[2];
+
+	}
+	for (int i = 0; i < a; i++)
+	{
+		for (int j = 0; j < a; j++)
+		{
+			if (f[j] == stu[i].score[2])
+				g[j]++;
+		}
+	}
+	int most3 = 0;
+	for (int i = 0; i < a - 1; i++)
+	{
+		if (g[i] < g[i + 1])
+			most3 = i + 1;
+	}
+	if (g[0] == 1)
+	{
+		most3 = -1;
+		printf("最终分没有众数\n");
+	}
+	else
+		printf("最终分的众数为%d\n", f[most3]);
+	//中位数
+	float camp1;//平时分
+	float mit1;
+	for (int i = 0; i < a - 1; i++)
+	{
+		for (int j = 0; j < a -1; j++)
+		{
+			if (stu[j].score[0] > stu[j].score[0])
+			{
+				camp1 = stu[j].score[0];
+				stu[j].score[0] = stu[j].score[0];
+				stu[j].score[0] = camp1;
+			}
+		}
+	}
+	if (a % 2 == 0)
+	{
+		mit1 = (stu[a / 2].score[0] + stu[a / 2 + 1].score[0]) / 2;
+		printf("平时分的中位数为%f\n", mit1);
+	}
+	if (a % 2 == 1)
+	{
+		mit1 = stu[(a-1) / 2+1 ].score[0];
+		printf("平时分的中位数为%f\n", mit1);
+	}
+	int camp2=0;//期末分
+	float mit2;
+	for (int i = 0; i < a - 1; i++)
+	{
+		for (int j = 0; j < a - 1; j++)
+		{
+			if (stu[j].score[1] > stu[j].score[1])
+			{
+				camp2 = stu[j].score[1];
+				stu[j].score[1] = stu[j].score[1];
+				stu[j].score[1] = camp2;
+			}
+		}
+	}
+	if (a % 2 == 0)
+	{
+		mit2 = (stu[a / 2].score[1] + stu[a / 2 + 1].score[1]) / 2;
+		printf("平时分的中位数为%f\n", mit2);
+	}
+	if (a % 2 == 1)
+	{
+		mit2 = stu[(a - 1) / 2 + 1].score[1];
+		printf("平时分的中位数为%f\n", mit2);
+	}
+	int camp3=0;//最终分
+	float mit3;
+	for (int i = 0; i < a - 1; i++)
+	{
+		for (int j = 0; j < a - 1; j++)
+		{
+			if (stu[j].score[2] > stu[j].score[2])
+			{
+				camp3 = stu[j].score[2];
+				stu[j].score[2] = stu[j].score[2];
+				stu[j].score[2] = camp3;
+			}
+		}
+	}
+	if (a % 2 == 0)
+	{
+		mit3 = (stu[a / 2].score[2] + stu[a / 2 + 1].score[2]) / 2;
+		printf("期末分的中位数为%f", mit3);
+	}
+	if (a % 2 == 1)
+	{
+		mit3 = stu[(a - 1) / 2 + 1].score[2];
+		printf("最终分的中位数为%f", mit3);
+	}
+
+	
+}
+void DrawHistogram(student*stu,int n)
+{
+	int a[10] = { 0 };
+	int b[10] = { 0 };
+	int c[10] = { 0 };
+	float d[10] = { 0 };
+	float e[10] = { 0 };
+	float f[10] = { 0 };
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+
+			if ((10 * j) <= stu[i].score[0] && stu[i].score[0] < (10 * j + 10))
+				a[j]++;
+
+		}
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		
+		d[i] = (float)a[i] / (float)n;
+	}
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+
+			if ((10 * j) <= stu[i].score[1] && stu[i].score[1] < (10 * j + 10))
+				b[j]++;
+
+		}
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		e[i] = (float)b[i] / (float)n;
+	}
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+
+			if ((10 * j) <= stu[i].score[2] && stu[i].score[2] < (10 * j + 10))
+				c[j]++;
+
+		}
+	}for (int i = 0; i < 10; i++)
+	{
+		f[i] = (float)c[i] / (float)n;
+	}
+	printf("平时分各分数段统计\n");
+	printf("分数段   人数  比例\n");
+	for (int i = 0; i < 10; i++)
+	{
+		printf("%3d~%3d|  %d    %.2f", 10 * i, 10 * i + 10, a[i],d[i]);
+		printf("\n");
+	}
+	printf("平时分模拟直方图\n");
+	printf("分数段\n");
+	for (int i = 0; i < 10; i++)
+	{
+		printf("%3d~%3d|",10*i,10*i+10);
+		for (;  a[i]>0; a[i]--)
+		{
+			printf("*");
+		}
+		printf("\n");
+	}
+	printf("        ------------(个)人数\n");
+	printf("期末分各分数段统计\n");
+	printf("分数段   人数   比例\n");
+	for (int i = 0; i < 10; i++)
+	{
+		printf("%3d~%3d|  %d     %.2f", 10 * i, 10 * i + 10, b[i],e[i]);
+		printf("\n");
+	}
+	printf("期末分模拟直方图\n");
+	printf("分数段\n");
+	for (int i = 0; i < 10; i++)
+	{
+		printf("%3d~%3d|", 10 * i, 10 * i + 10);
+		for (; b[i] > 0; b[i]--)
+		{
+			printf("*");
+		}
+		printf("\n");
+	}
+	printf("        ------------(个)人数\n");
+	printf("最终分各分数段统计\n");
+	printf("分数段   人数  比例\n");
+	for (int i = 0; i < 10; i++)
+	{
+		printf("%3d~%3d|  %d    %.2f", 10 * i, 10 * i + 10, c[i],f[i]);
+		printf("\n");
+	}
+	printf("最终分模拟直方图\n");
+	printf("分数段\n");
+	for (int i = 0; i < 10; i++)
+	{
+		printf("%3d~%3d|", 10 * i, 10 * i + 10);
+		for (; c[i] > 0; c[i]--)
+		{
+			printf("*");
+		}
+		printf("\n");
+	}
+	printf("        ------------(个）人数\n");
+
+}
+void ShowDataII(student*stu,int a)
+{
+	count(stu,a);
+}
